@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "programmator"
+version = "0.1.0"
+description = ""
+authors = ["keshe4ka <a.anaschenko@btc-s.ru>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+pyserial = "^3.5"
+esptool = "^4.6.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
