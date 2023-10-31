@@ -10,6 +10,10 @@ GPIO.setup(10, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)  # BUTTON
 GPIO.setup(8, GPIO.OUT, initial=GPIO.LOW)  # RED LIGHT
 GPIO.setup(7, GPIO.OUT, initial=GPIO.LOW)  # GREEN LIGHT
 
+FIRMWARE_DIR = '/home/pi/programmator'
+FIRMWARE_FILENAME = 'firmware.factory.bin'
+BLEOTA_FILENAME = 'bleota.bin'
+LITTLEFS_FILENAME = 'littlefs.bin'
 ESP_32_DESC = 'CP2102 USB to UART Bridge Controller'
 
 
@@ -59,8 +63,20 @@ def main():
         red_light(True)
         green_light(True)
 
-        # upload firmware with esptool
-        esptool.main(['-p', com_port, 'flash_id'])
+        # clear flash
+        esptool.main(['-p', com_port, 'erase_flash'])
+
+        # upload firmware 
+        esptool.main(['-p', com_port, 'write_flash', '0x00', f'{FIRMWARE_DIR}/{FIRMWARE_FILENAME}'])
+
+        # upload bleota
+        if "s3" in FIRMWARE_FILENAME or "-v3" in FIRMWARE_FILENAME or "t-deck" in FIRMWARE_FILENAME or "wireless-paper" in FIRMWARE_FILENAME or "wireless-tracker" in FIRMWARE_FILENAME:
+            BLEOTA_FILENAME = "bleota-s3.bin"
+        esptool.main(['-p', com_port, 'write_flash', '0x260000', f'{FIRMWARE_DIR}/{BLEOTA_FILENAME}'])
+
+        # upload littlefs
+        esptool.main(['-p', com_port, 'write_flash', '0x300000', f'{FIRMWARE_DIR}/{LITTLEFS_FILENAME}'])
+
 
         # show LEDS for successfully
         red_light(False)
